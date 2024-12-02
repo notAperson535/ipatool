@@ -1,93 +1,35 @@
-name: Build
-
-on:
-  push:
-  workflow_dispatch:
-
-jobs:
-  get_version:
-    name: Get version
-    runs-on: ubuntu-latest
-    steps:
-      - id: set_output
-        run: echo version=${GITHUB_REF#refs/tags/v} >> $GITHUB_OUTPUT
-        
-    outputs:
-      version: ${{ steps.set_output.outputs.version }}
-
-  build:
-    name: Build
-    runs-on: macos-latest
-    needs: [get_version]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.19.3'
-          cache: true
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-windows-arm64.exe
-        env:
-          GOOS: windows
-          GOARCH: arm64
-          VERSION: ${{ needs.get_version.outputs.version }}
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-windows-amd64.exe
-        env:
-          GOOS: windows
-          GOARCH: amd64
-          VERSION: ${{ needs.get_version.outputs.version }}
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-linux-arm64
-        env:
-          GOOS: linux
-          GOARCH: arm64
-          VERSION: ${{ needs.get_version.outputs.version }}
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-linux-amd64
-        env:
-          GOOS: linux
-          GOARCH: amd64
-          VERSION: ${{ needs.get_version.outputs.version }}
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-macos-arm64
-        env:
-          GOOS: darwin
-          GOARCH: arm64
-          VERSION: ${{ needs.get_version.outputs.version }}
-          CGO_CFLAGS: -mmacosx-version-min=10.15
-          CGO_LDFLAGS: -mmacosx-version-min=10.15
-          CGO_ENABLED: 1
-      - run: go build -ldflags="-X github.com/notaperson535/ipatool/v2/cmd.version=$VERSION" -o ipatool-$VERSION-macos-amd64
-        env:
-          GOOS: darwin
-          GOARCH: amd64
-          VERSION: ${{ needs.get_version.outputs.version }}
-          CGO_CFLAGS: -mmacosx-version-min=10.15
-          CGO_LDFLAGS: -mmacosx-version-min=10.15
-          CGO_ENABLED: 1
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-windows-arm64.exe
+          name: ipatool-windows-arm64.exe
           path: ipatool-${{ needs.get_version.outputs.version }}-windows-arm64.exe
           if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-windows-amd64.exe
+          name: ipatool-windows-amd64.exe
           path: ipatool-${{ needs.get_version.outputs.version }}-windows-amd64.exe
           if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-linux-arm64
+          name: ipatool-linux-arm64
           path: ipatool-${{ needs.get_version.outputs.version }}-linux-arm64
           if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-linux-amd64
+          name: ipatool-linux-amd64
           path: ipatool-${{ needs.get_version.outputs.version }}-linux-amd64
           if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-macos-arm64
+          name: ipatool-macos-arm64
           path: ipatool-${{ needs.get_version.outputs.version }}-macos-arm64
           if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         with:
-          name: ipatool-${{ needs.get_version.outputs.version }}-macos-amd64
+          name: ipatool-macos-amd64
           path: ipatool-${{ needs.get_version.outputs.version }}-macos-amd64
           if-no-files-found: error
