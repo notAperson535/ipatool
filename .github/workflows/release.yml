@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: set_output
-        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/v}
+        run: echo version=${GITHUB_REF#refs/tags/v} >> $GITHUB_OUTPUT
+        
     outputs:
       version: ${{ steps.set_output.outputs.version }}
 
